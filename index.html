@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Good and Bad Days</title>
+    <title>Shareable Interactive Calendar</title>
     
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,6 +17,7 @@
         /* Custom styles to supplement Tailwind */
         body {
             font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth; /* Smooth scrolling for the anchor link */
         }
 
         /* Style for the striped mixed day background */
@@ -66,32 +67,38 @@
     <div class="max-w-7xl mx-auto">
         <!-- Header Section -->
         <header class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl font-bold text-slate-900">Good/Bad Days</h1>
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900">Shareable Day Visualizer</h1>
             <p class="text-slate-600 mt-2">Create your calendar, then click Share to get a link for others!</p>
         </header>
 
         <!-- Input Form Section -->
         <div class="bg-white p-6 rounded-2xl shadow-lg mb-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-                <!-- Date Range Inputs -->
-                <div class="lg:col-span-1">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <!-- Title and Date Inputs -->
+                <div>
+                    <label for="calendar-title" class="block text-sm font-medium text-slate-700 mb-1">Optional Title</label>
+                    <input type="text" id="calendar-title" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400" placeholder="e.g., My Summer Vacation">
+                </div>
+                <div>
                     <label for="start-date" class="block text-sm font-medium text-slate-700 mb-1">Start Date</label>
                     <input type="date" id="start-date" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400">
                 </div>
-                <div class="lg:col-span-1">
+                <div>
                     <label for="end-date" class="block text-sm font-medium text-slate-700 mb-1">End Date</label>
                     <input type="date" id="end-date" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400">
                 </div>
-                <!-- Day List Inputs -->
-                <div class="md:col-span-2 lg:col-span-1">
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                 <!-- Day List Inputs -->
+                <div>
                     <label for="good-days" class="block text-sm font-medium text-green-700 mb-1">Good Days 🌸</label>
                     <textarea id="good-days" rows="3" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400" placeholder="e.g., 2024-05-20 to 2024-05-22"></textarea>
                 </div>
-                <div class="md:col-span-1 lg:col-span-1">
+                <div>
                     <label for="bad-days" class="block text-sm font-medium text-red-700 mb-1">Bad Days 💩</label>
                     <textarea id="bad-days" rows="3" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-400 focus:border-red-400" placeholder="e.g., 2024-05-23"></textarea>
                 </div>
-                <div class="md:col-span-1 lg:col-span-1">
+                <div>
                     <label for="mixed-days" class="block text-sm font-medium text-yellow-700 mb-1">Mixed Days 🌗</label>
                     <textarea id="mixed-days" rows="3" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400" placeholder="e.g., 2024-05-24"></textarea>
                 </div>
@@ -105,6 +112,11 @@
                 </button>
             </div>
              <p class="text-xs text-slate-500 mt-4 text-center">Enter dates as YYYY-MM-DD. Use "to" for ranges (e.g., 2024-01-01 to 2024-01-05).</p>
+        </div>
+
+        <!-- ANCHOR and Title a user sees when opening a shared link -->
+        <div id="calendar-view" class="mb-8">
+            <!-- Fancy title will be injected here -->
         </div>
 
         <!-- Calendar Output Section -->
@@ -131,6 +143,7 @@
 
     <script>
         // --- DOM Element References ---
+        const calendarTitleInput = document.getElementById('calendar-title');
         const startDateInput = document.getElementById('start-date');
         const endDateInput = document.getElementById('end-date');
         const goodDaysTextarea = document.getElementById('good-days');
@@ -138,6 +151,7 @@
         const mixedDaysTextarea = document.getElementById('mixed-days');
         const generateBtn = document.getElementById('generate-btn');
         const shareBtn = document.getElementById('share-btn');
+        const calendarView = document.getElementById('calendar-view');
         const calendarContainer = document.getElementById('calendar-container');
         const dayModal = document.getElementById('day-modal');
         const modalDateDisplay = document.getElementById('modal-date-display');
@@ -191,9 +205,22 @@
         }
 
         /**
-         * Main function to render all calendars based on user input.
+         * Main function to render all calendars and the title based on user input.
          */
         function renderCalendars() {
+            // Render the title first
+            const title = calendarTitleInput.value.trim();
+            calendarView.innerHTML = ''; // Clear previous title
+            if (title) {
+                const fancyTitle = document.createElement('h2');
+                fancyTitle.className = 'text-3xl md:text-5xl font-bold text-center text-slate-800 break-words';
+                // Using textContent for security to prevent HTML injection from user input
+                fancyTitle.textContent = title; 
+                calendarView.innerHTML = `<span class="text-3xl md:text-4xl" role="img" aria-label="flower">🌸</span> ${fancyTitle.outerHTML} <span class="text-3xl md:text-4xl" role="img" aria-label="poop">💩</span>`;
+                calendarView.classList.add('text-center');
+            }
+
+
             const startDate = new Date(startDateInput.value + 'T00:00:00');
             const endDate = new Date(endDateInput.value + 'T00:00:00');
 
@@ -345,15 +372,19 @@
 
         function handleShareClick() {
             const url = new URL(window.location.href.split('?')[0]);
+            const title = calendarTitleInput.value.trim();
+
+            if (title) url.searchParams.set('title', title);
             if (startDateInput.value) url.searchParams.set('start', startDateInput.value);
             if (endDateInput.value) url.searchParams.set('end', endDateInput.value);
             
-            // Use the cleaned-up data from the sets for the URL
             if (goodDays.size > 0) url.searchParams.set('good', [...goodDays].sort().join(','));
             if (badDays.size > 0) url.searchParams.set('bad', [...badDays].sort().join(','));
-            if (mixedDays.size > 0) url.search_params.set('mixed', [...mixedDays].sort().join(','));
+            if (mixedDays.size > 0) url.searchParams.set('mixed', [...mixedDays].sort().join(','));
 
-            if (copyToClipboard(url.toString())) {
+            const finalUrl = url.toString() + '#calendar-view';
+
+            if (copyToClipboard(finalUrl)) {
                 const originalText = shareBtn.innerHTML;
                 shareBtn.innerHTML = '✅ Copied!';
                 shareBtn.disabled = true;
@@ -378,6 +409,10 @@
             const params = new URLSearchParams(window.location.search);
             let hasParams = false;
 
+            if (params.has('title')) {
+                calendarTitleInput.value = params.get('title');
+                hasParams = true;
+            }
             if (params.has('start')) {
                 startDateInput.value = params.get('start');
                 hasParams = true;
