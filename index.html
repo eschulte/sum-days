@@ -203,6 +203,14 @@
             goodDaysTextarea.value = [...goodDays].sort().join(', ');
             badDaysTextarea.value = [...badDays].sort().join(', ');
             mixedDaysTextarea.value = [...mixedDays].sort().join(', ');
+            goodCountSpan = document.getElementById('good-count');
+            if(goodCountSpan) {
+              goodCountSpan.textContent = goodDays.size;
+            }
+            badCountSpan = document.getElementById('bad-count');
+            if(badCountSpan) {
+              badCountSpan.textContent = badDays.size;
+            }
         }
 
         /**
@@ -217,7 +225,7 @@
                 fancyTitle.className = 'text-3xl md:text-5xl font-bold text-center text-slate-800 break-words';
                 // Using textContent for security to prevent HTML injection from user input
                 fancyTitle.textContent = title; 
-                calendarView.innerHTML = `<span class="text-3xl md:text-4xl" role="img" aria-label="flower">🌸</span> ${fancyTitle.outerHTML} <span class="text-3xl md:text-4xl" role="img" aria-label="poop">💩</span>`;
+              calendarView.innerHTML = `<span class="text-3xl md:text-4xl" role="img" aria-label="flower">🌸 <span id="good-count" class="text-slate-400">${goodDays.size}</span></span> ${fancyTitle.outerHTML} <span class="text-3xl md:text-4xl" role="img" aria-label="poop">💩 <span id="bad-count" class="text-slate-400">${badDays.size}</span></span>`;
                 calendarView.classList.add('text-center');
             }
 
