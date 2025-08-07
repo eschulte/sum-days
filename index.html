@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shareable Good/Bad Day Calendar</title>
+    <title>Good and Bad Days</title>
     
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -66,7 +66,7 @@
     <div class="max-w-7xl mx-auto">
         <!-- Header Section -->
         <header class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl font-bold text-slate-900">Shareable Good/Bad Day Calendar</h1>
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900">Good/Bad Days</h1>
             <p class="text-slate-600 mt-2">Create your calendar, then click Share to get a link for others!</p>
         </header>
 
@@ -88,7 +88,7 @@
                     <textarea id="good-days" rows="3" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400" placeholder="e.g., 2024-05-20 to 2024-05-22"></textarea>
                 </div>
                 <div class="md:col-span-1 lg:col-span-1">
-                    <label for="bad-days" class="block text-sm font-medium text-red-700 mb-1">Bad Days 🐌</label>
+                    <label for="bad-days" class="block text-sm font-medium text-red-700 mb-1">Bad Days 💩</label>
                     <textarea id="bad-days" rows="3" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-400 focus:border-red-400" placeholder="e.g., 2024-05-23"></textarea>
                 </div>
                 <div class="md:col-span-1 lg:col-span-1">
@@ -120,7 +120,7 @@
             <p id="modal-date-display" class="text-slate-600 mb-4">Editing date...</p>
             <div class="grid grid-cols-2 gap-3">
                 <button data-type="good" class="modal-btn bg-pink-200 text-pink-800 font-semibold py-3 rounded-lg hover:bg-pink-300">🌸 Good</button>
-                <button data-type="bad" class="modal-btn bg-yellow-900/80 text-yellow-100 font-semibold py-3 rounded-lg hover:bg-yellow-900">🐌 Bad</button>
+                <button data-type="bad" class="modal-btn bg-yellow-900/80 text-yellow-100 font-semibold py-3 rounded-lg hover:bg-yellow-900">💩 Bad</button>
                 <button data-type="mixed" class="modal-btn bg-gray-400 text-white font-semibold py-3 rounded-lg hover:bg-gray-500">🌗 Mixed</button>
                 <button data-type="neutral" class="modal-btn bg-slate-200 text-slate-800 font-semibold py-3 rounded-lg hover:bg-slate-300">⚪️ Neutral</button>
             </div>
@@ -274,7 +274,7 @@
                 content = `<span class="day-number font-bold self-end">${day}</span><div class="text-2xl text-center leading-tight">🌸<br>😊</div>`;
             } else if (badDays.has(dateString)) {
                 cellClasses += ' bg-yellow-900/80 text-yellow-100';
-                content = `<span class="day-number font-bold self-end">${day}</span><div class="text-2xl text-center leading-tight">🐌<br>😞</div>`;
+                content = `<span class="day-number font-bold self-end">${day}</span><div class="text-2xl text-center leading-tight">💩<br>😞</div>`;
             } else if (mixedDays.has(dateString)) {
                 cellClasses += ' mixed-day-bg text-slate-900';
                 content = `<span class="day-number font-bold self-end">${day}</span><div class="text-2xl text-center"></div>`;
@@ -351,7 +351,7 @@
             // Use the cleaned-up data from the sets for the URL
             if (goodDays.size > 0) url.searchParams.set('good', [...goodDays].sort().join(','));
             if (badDays.size > 0) url.searchParams.set('bad', [...badDays].sort().join(','));
-            if (mixedDays.size > 0) url.searchParams.set('mixed', [...mixedDays].sort().join(','));
+            if (mixedDays.size > 0) url.search_params.set('mixed', [...mixedDays].sort().join(','));
 
             if (copyToClipboard(url.toString())) {
                 const originalText = shareBtn.innerHTML;
