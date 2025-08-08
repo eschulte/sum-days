@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Good/Bad Days</title>
     
-    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts: Inter -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
@@ -19,35 +19,21 @@
             font-family: 'Inter', sans-serif;
             scroll-behavior: smooth; /* Smooth scrolling for the anchor link */
         }
-
-        /* Style for the striped mixed day background */
         .mixed-day-bg {
             background-image: linear-gradient(
-                45deg,
-                #fecaca 25%, /* A light pink from Tailwind's red-200 */
-                #a16207 25%, /* A brownish color from Tailwind's yellow-800 */
-                #a16207 50%,
-                #fecaca 50%,
-                #fecaca 75%,
-                #a16207 75%,
-                #a16207 100%
+                45deg, #fecaca 25%, #a16207 25%, #a16207 50%,
+                #fecaca 50%, #fecaca 75%, #a16207 75%, #a16207 100%
             );
-            background-size: 28.28px 28.28px; /* Controls the stripe size */
+            background-size: 28.28px 28.28px;
         }
-        
-        /* Ensure text inside striped background is readable */
         .mixed-day-bg .day-number {
              background-color: rgba(255, 255, 255, 0.7);
              border-radius: 9999px;
              padding: 0 0.25rem;
         }
-
-        /* Styles for the day-editing modal */
         #day-modal {
             transition: opacity 0.2s ease-in-out;
         }
-
-        /* Animation for when the calendar appears */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -55,52 +41,65 @@
         #calendar-container {
             animation: fadeIn 0.5s ease-out forwards;
         }
-        
-        /* Make calendar days feel clickable */
         .calendar-day {
             cursor: pointer;
+            user-select: none; /* Prevent text selection during drag */
+        }
+        /* Style for selected days */
+        .day-selected {
+            box-shadow: inset 0 0 0 3px #38bdf8; /* sky-500 */
+            border-radius: 0.5rem; /* rounded-lg */
         }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 p-4 sm:p-8">
 
     <div class="max-w-7xl mx-auto">
-        <!-- Header Section -->
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold text-slate-900">Good/Bad Days</h1>
-            <p class="text-slate-600 mt-2">Create your calendar, then click Share to get a link for others!</p>
+            <p class="text-slate-600 mt-2">Click and drag to select a range of days.</p>
         </header>
 
-        <!-- Input Form Section -->
         <div class="bg-white p-6 rounded-2xl shadow-lg mb-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <!-- Title and Date Inputs -->
                 <div>
                     <label for="calendar-title" class="block text-sm font-medium text-slate-700 mb-1">Optional Title</label>
-                    <input type="text" id="calendar-title" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400" placeholder="e.g., My Summer Vacation">
+                    <input type="text" id="calendar-title" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400" placeholder="e.g., My Summer Vacation">
                 </div>
                 <div>
                     <label for="start-date" class="block text-sm font-medium text-slate-700 mb-1">Start Date</label>
-                    <input type="date" id="start-date" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400">
+                    <input type="date" id="start-date" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-pink-400">
                 </div>
                 <div>
                     <label for="end-date" class="block text-sm font-medium text-slate-700 mb-1">End Date</label>
-                    <input type="date" id="end-date" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400">
+                    <input type="date" id="end-date" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-pink-400">
                 </div>
             </div>
+            
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                 <!-- Day List Inputs -->
                 <div>
-                    <label for="good-days" class="block text-sm font-medium text-green-700 mb-1">Good Days 🌸</label>
-                    <textarea id="good-days" rows="3" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400" placeholder="e.g., 2024-05-20 to 2024-05-22"></textarea>
+                    <label for="good-days" class="block text-sm font-medium text-green-700 mb-1 flex items-center gap-2">
+                        <span>Good Days</span>
+                        <div class="relative w-8 h-6">
+                            <span class="emoji-display absolute inset-0 flex items-center justify-center text-base cursor-pointer" title="Click to change emoji" data-input-id="good-emoji-input">🌸</span>
+                            <input type="text" id="good-emoji-input" value="🌸" maxlength="2" class="absolute inset-0 w-full h-full p-0 text-center border rounded hidden">
+                        </div>
+                    </label>
+                    <textarea id="good-days" rows="4" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-400" placeholder="e.g., 2024-08-08 to 2024-08-10"></textarea>
                 </div>
                 <div>
-                    <label for="bad-days" class="block text-sm font-medium text-red-700 mb-1">Bad Days 💩</label>
-                    <textarea id="bad-days" rows="3" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-400 focus:border-red-400" placeholder="e.g., 2024-05-23"></textarea>
+                    <label for="bad-days" class="block text-sm font-medium text-red-700 mb-1 flex items-center gap-2">
+                        <span>Bad Days</span>
+                        <div class="relative w-8 h-6">
+                            <span class="emoji-display absolute inset-0 flex items-center justify-center text-base cursor-pointer" title="Click to change emoji" data-input-id="bad-emoji-input">💩</span>
+                            <input type="text" id="bad-emoji-input" value="💩" maxlength="2" class="absolute inset-0 w-full h-full p-0 text-center border rounded hidden">
+                        </div>
+                    </label>
+                    <textarea id="bad-days" rows="4" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-400" placeholder="e.g., 2024-08-11"></textarea>
                 </div>
                 <div>
                     <label for="mixed-days" class="block text-sm font-medium text-yellow-700 mb-1">Mixed Days 🌗</label>
-                    <textarea id="mixed-days" rows="3" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400" placeholder="e.g., 2024-05-24"></textarea>
+                    <textarea id="mixed-days" rows="4" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-yellow-400" placeholder="e.g., 2024-08-12"></textarea>
                 </div>
             </div>
             <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -111,29 +110,20 @@
                     🔗 Share
                 </button>
             </div>
-            <p class="text-xs text-slate-500 mt-4 text-center">Enter dates as YYYY-MM-DD. Use "to" for ranges (e.g., 2024-01-01 to 2024-01-05).</br>
-            Or just Generate Calendar and then click on days to change their classification.</p>
         </div>
 
-        <!-- ANCHOR and Title a user sees when opening a shared link -->
-        <div id="calendar-view" class="mb-8">
-            <!-- Fancy title will be injected here -->
-        </div>
+        <div id="calendar-view" class="mb-8"></div>
 
-        <!-- Calendar Output Section -->
-        <div id="calendar-container" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-            <!-- Calendars will be dynamically inserted here -->
-        </div>
+        <div id="calendar-container" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8"></div>
     </div>
     
-    <!-- Day Editing Modal -->
     <div id="day-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
         <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm text-center">
             <h3 class="text-lg font-bold mb-2">Change Day Type</h3>
             <p id="modal-date-display" class="text-slate-600 mb-4">Editing date...</p>
             <div class="grid grid-cols-2 gap-3">
-                <button data-type="good" class="modal-btn bg-pink-200 text-pink-800 font-semibold py-3 rounded-lg hover:bg-pink-300">🌸 Good</button>
-                <button data-type="bad" class="modal-btn bg-yellow-900/80 text-yellow-100 font-semibold py-3 rounded-lg hover:bg-yellow-900">💩 Bad</button>
+                <button data-type="good" id="modal-good-btn" class="modal-btn bg-pink-200 text-pink-800 font-semibold py-3 rounded-lg hover:bg-pink-300">🌸 Good</button>
+                <button data-type="bad" id="modal-bad-btn" class="modal-btn bg-yellow-900/80 text-yellow-100 font-semibold py-3 rounded-lg hover:bg-yellow-900">💩 Bad</button>
                 <button data-type="mixed" class="modal-btn bg-gray-400 text-white font-semibold py-3 rounded-lg hover:bg-gray-500">🌗 Mixed</button>
                 <button data-type="neutral" class="modal-btn bg-slate-200 text-slate-800 font-semibold py-3 rounded-lg hover:bg-slate-300">⚪️ Neutral</button>
             </div>
@@ -144,44 +134,40 @@
 
     <script>
         // --- DOM Element References ---
-        const calendarTitleInput = document.getElementById('calendar-title');
-        const startDateInput = document.getElementById('start-date');
-        const endDateInput = document.getElementById('end-date');
-        const goodDaysTextarea = document.getElementById('good-days');
-        const badDaysTextarea = document.getElementById('bad-days');
-        const mixedDaysTextarea = document.getElementById('mixed-days');
-        const generateBtn = document.getElementById('generate-btn');
-        const shareBtn = document.getElementById('share-btn');
-        const calendarView = document.getElementById('calendar-view');
-        const calendarContainer = document.getElementById('calendar-container');
-        const dayModal = document.getElementById('day-modal');
-        const modalDateDisplay = document.getElementById('modal-date-display');
-        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const calendarTitleInput = document.getElementById('calendar-title'),
+              startDateInput = document.getElementById('start-date'),
+              endDateInput = document.getElementById('end-date'),
+              goodEmojiInput = document.getElementById('good-emoji-input'),
+              badEmojiInput = document.getElementById('bad-emoji-input'),
+              goodDaysTextarea = document.getElementById('good-days'),
+              badDaysTextarea = document.getElementById('bad-days'),
+              mixedDaysTextarea = document.getElementById('mixed-days'),
+              generateBtn = document.getElementById('generate-btn'),
+              shareBtn = document.getElementById('share-btn'),
+              calendarView = document.getElementById('calendar-view'),
+              calendarContainer = document.getElementById('calendar-container'),
+              dayModal = document.getElementById('day-modal'),
+              modalDateDisplay = document.getElementById('modal-date-display'),
+              modalCloseBtn = document.getElementById('modal-close-btn'),
+              modalGoodBtn = document.getElementById('modal-good-btn'),
+              modalBadBtn = document.getElementById('modal-bad-btn');
 
         // --- State Management ---
-        let goodDays = new Set();
-        let badDays = new Set();
-        let mixedDays = new Set();
-        let currentlyEditingDate = null;
+        let goodDays = new Set(), badDays = new Set(), mixedDays = new Set();
+        let selectedDays = new Set();
+        let isDragging = false;
+        let startDragDate = null;
+        let endDragDate = null;
 
-        /**
-         * Parses a string of dates, including ranges, into a Set of 'YYYY-MM-DD' strings.
-         * @param {string} text - The raw text from the textarea.
-         * @returns {Set<string>} A set of formatted date strings.
-         */
         function parseDateListWithRanges(text) {
             const dateSet = new Set();
             if (!text) return dateSet;
-
             const entries = text.split(/[\n,]/).filter(Boolean);
-
             for (const entry of entries) {
                 const trimmedEntry = entry.trim();
                 if (trimmedEntry.toLowerCase().includes(' to ')) {
                     const [startStr, endStr] = trimmedEntry.toLowerCase().split(' to ');
-                    const startDate = new Date(startStr.trim() + 'T00:00:00');
-                    const endDate = new Date(endStr.trim() + 'T00:00:00');
-
+                    const startDate = new Date(startStr.trim() + 'T00:00:00'), endDate = new Date(endStr.trim() + 'T00:00:00');
                     if (!isNaN(startDate) && !isNaN(endDate) && startDate <= endDate) {
                         let currentDate = new Date(startDate);
                         while (currentDate <= endDate) {
@@ -196,285 +182,252 @@
             return dateSet;
         }
         
-        /**
-         * Updates the textareas based on the current state of the date sets.
-         */
         function updateAllTextareas() {
             goodDaysTextarea.value = [...goodDays].sort().join(', ');
             badDaysTextarea.value = [...badDays].sort().join(', ');
             mixedDaysTextarea.value = [...mixedDays].sort().join(', ');
-            goodCountSpan = document.getElementById('good-count');
-            if(goodCountSpan) {
-              goodCountSpan.textContent = goodDays.size;
-            }
-            badCountSpan = document.getElementById('bad-count');
-            if(badCountSpan) {
-              badCountSpan.textContent = badDays.size;
-            }
+            const goodCountSpan = document.getElementById('good-count');
+            if (goodCountSpan) goodCountSpan.textContent = goodDays.size;
+            const badCountSpan = document.getElementById('bad-count');
+            if (badCountSpan) badCountSpan.textContent = badDays.size;
         }
 
-        /**
-         * Main function to render all calendars and the title based on user input.
-         */
         function renderCalendars() {
-            // Render the title first
-            const title = calendarTitleInput.value.trim();
-            calendarView.innerHTML = ''; // Clear previous title
+            const goodEmoji = goodEmojiInput.value.trim() || '🌸', badEmoji = badEmojiInput.value.trim() || '💩', title = calendarTitleInput.value.trim();
+            calendarView.innerHTML = '';
             if (title) {
                 const fancyTitle = document.createElement('h2');
                 fancyTitle.className = 'text-3xl md:text-5xl font-bold text-center text-slate-800 break-words';
-                // Using textContent for security to prevent HTML injection from user input
                 fancyTitle.textContent = title; 
-              calendarView.innerHTML = `<span class="text-3xl md:text-4xl" role="img" aria-label="flower">🌸 <span id="good-count" class="text-slate-400">${goodDays.size}</span></span> ${fancyTitle.outerHTML} <span class="text-3xl md:text-4xl" role="img" aria-label="poop">💩 <span id="bad-count" class="text-slate-400">${badDays.size}</span></span>`;
+                calendarView.innerHTML = `<span class="text-3xl md:text-4xl" role="img"><span id="title-good-emoji-display">${goodEmoji}</span> <span id="good-count"></span></span> ${fancyTitle.outerHTML} <span class="text-3xl md:text-4xl" role="img"><span id="title-bad-emoji-display">${badEmoji}</span> <span id="bad-count"></span></span>`;
                 calendarView.classList.add('text-center');
             }
-
-
-            const startDate = new Date(startDateInput.value + 'T00:00:00');
-            const endDate = new Date(endDateInput.value + 'T00:00:00');
-
+            const startDate = new Date(startDateInput.value + 'T00:00:00'), endDate = new Date(endDateInput.value + 'T00:00:00');
             if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
                 calendarContainer.innerHTML = `<div class="col-span-full text-center p-8 bg-red-100 text-red-700 rounded-lg">Please select a valid start and end date.</div>`;
                 return;
             }
-
             goodDays = parseDateListWithRanges(goodDaysTextarea.value);
             badDays = parseDateListWithRanges(badDaysTextarea.value);
             mixedDays = parseDateListWithRanges(mixedDaysTextarea.value);
-
             calendarContainer.innerHTML = '';
             let currentDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-
             while (currentDate <= endDate) {
-                const monthDiv = generateMonthCalendar(currentDate.getFullYear(), currentDate.getMonth());
-                calendarContainer.appendChild(monthDiv);
+                calendarContainer.appendChild(generateMonthCalendar(currentDate.getFullYear(), currentDate.getMonth()));
                 currentDate.setMonth(currentDate.getMonth() + 1);
             }
+            updateAllTextareas();
         }
 
-        /**
-         * Generates the HTML for a single month's calendar.
-         * @param {number} year - The full year (e.g., 2024).
-         * @param {number} month - The month index (0-11).
-         * @returns {HTMLElement} The div element representing the month's calendar.
-         */
         function generateMonthCalendar(year, month) {
             const monthWrapper = document.createElement('div');
             monthWrapper.className = 'bg-white p-4 rounded-xl shadow-md';
             const monthName = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
-            
-            let headerHTML = `<h3 class="text-xl font-bold text-center text-slate-800 mb-4">${monthName}</h3>`;
-            headerHTML += `<div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-500 mb-2">
-                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-            </div>`;
-
+            let headerHTML = `<h3 class="text-xl font-bold text-center text-slate-800 mb-4">${monthName}</h3><div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-500 mb-2"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>`;
             const daysGrid = document.createElement('div');
             daysGrid.className = 'grid grid-cols-7 gap-1';
-
             const firstDayOfMonth = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            for (let i = 0; i < firstDayOfMonth; i++) {
-                daysGrid.appendChild(document.createElement('div'));
-            }
-
+            for (let i = 0; i < firstDayOfMonth; i++) daysGrid.appendChild(document.createElement('div'));
             for (let day = 1; day <= daysInMonth; day++) {
-                const date = new Date(year, month, day);
-                const dateString = date.toISOString().split('T')[0];
+                const dateString = new Date(year, month, day).toISOString().split('T')[0];
                 const dayCell = document.createElement('div');
                 dayCell.dataset.date = dateString;
                 dayCell.classList.add('calendar-day');
                 updateDayCell(dayCell, dateString);
                 daysGrid.appendChild(dayCell);
             }
-
             monthWrapper.innerHTML = headerHTML;
             monthWrapper.appendChild(daysGrid);
             return monthWrapper;
         }
         
-        /**
-         * Updates a single day cell's style and content based on its type.
-         * @param {HTMLElement} dayCell - The DOM element for the day.
-         * @param {string} dateString - The 'YYYY-MM-DD' date for the cell.
-         */
         function updateDayCell(dayCell, dateString) {
+            const goodEmoji = goodEmojiInput.value.trim() || '🌸', badEmoji = badEmojiInput.value.trim() || '💩';
             const day = new Date(dateString + 'T00:00:00').getDate();
             let cellClasses = 'h-20 sm:h-24 p-1.5 rounded-lg flex flex-col justify-between text-sm transition-all duration-200';
             let content = `<span class="day-number font-medium self-end">${day}</span><div class="text-2xl text-center"></div>`;
-            
-            dayCell.className = ''; 
-
             if (goodDays.has(dateString)) {
                 cellClasses += ' bg-pink-200 text-pink-800';
-                content = `<span class="day-number font-bold self-end">${day}</span><div class="text-2xl text-center leading-tight">🌸<br>😊</div>`;
+                content = `<span class="day-number font-bold self-end">${day}</span><div class="text-2xl text-center leading-tight">${goodEmoji}<br>😊</div>`;
             } else if (badDays.has(dateString)) {
                 cellClasses += ' bg-yellow-900/80 text-yellow-100';
-                content = `<span class="day-number font-bold self-end">${day}</span><div class="text-2xl text-center leading-tight">💩<br>😞</div>`;
+                content = `<span class="day-number font-bold self-end">${day}</span><div class="text-2xl text-center leading-tight">${badEmoji}<br>😞</div>`;
             } else if (mixedDays.has(dateString)) {
                 cellClasses += ' mixed-day-bg text-slate-900';
                 content = `<span class="day-number font-bold self-end">${day}</span><div class="text-2xl text-center"></div>`;
             } else {
                 cellClasses += ' bg-slate-100 hover:bg-slate-200';
             }
-            
             dayCell.className = `calendar-day ${cellClasses}`;
             dayCell.innerHTML = content;
         }
 
-        // --- Modal Handling ---
-        function openDayModal(dateString) {
-            currentlyEditingDate = dateString;
-            const d = new Date(dateString + 'T00:00:00');
-            modalDateDisplay.textContent = d.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        function clearSelectionStyles() {
+            document.querySelectorAll('.day-selected').forEach(el => el.classList.remove('day-selected'));
+        }
+
+        function openDayModal() {
+            if (selectedDays.size === 0) return;
+            if (selectedDays.size === 1) {
+                const d = new Date([...selectedDays][0] + 'T00:00:00');
+                modalDateDisplay.textContent = d.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            } else {
+                modalDateDisplay.textContent = `Editing ${selectedDays.size} days`;
+            }
             dayModal.classList.remove('hidden');
         }
 
         function closeDayModal() {
             dayModal.classList.add('hidden');
-            currentlyEditingDate = null;
+            clearSelectionStyles();
+            selectedDays.clear();
         }
         
         function handleDayTypeChange(newType) {
-            if (!currentlyEditingDate) return;
-
-            goodDays.delete(currentlyEditingDate);
-            badDays.delete(currentlyEditingDate);
-            mixedDays.delete(currentlyEditingDate);
-
-            if (newType === 'good') goodDays.add(currentlyEditingDate);
-            if (newType === 'bad') badDays.add(currentlyEditingDate);
-            if (newType === 'mixed') mixedDays.add(currentlyEditingDate);
-            
-            const cellToUpdate = document.querySelector(`.calendar-day[data-date="${currentlyEditingDate}"]`);
-            if (cellToUpdate) {
-                updateDayCell(cellToUpdate, currentlyEditingDate);
+            if (selectedDays.size === 0) return;
+            for (const date of selectedDays) {
+                goodDays.delete(date); badDays.delete(date); mixedDays.delete(date);
+                if (newType === 'good') goodDays.add(date);
+                if (newType === 'bad') badDays.add(date);
+                if (newType === 'mixed') mixedDays.add(date);
+                const cellToUpdate = document.querySelector(`.calendar-day[data-date="${date}"]`);
+                if (cellToUpdate) updateDayCell(cellToUpdate, date);
             }
-
             updateAllTextareas();
             closeDayModal();
         }
-
-        // --- Sharing and Clipboard ---
-        /**
-         * Copies text to the clipboard. Uses a fallback for broader compatibility.
-         * @param {string} text - The text to copy.
-         * @returns {boolean} - True if successful, false otherwise.
-         */
-        function copyToClipboard(text) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";
-            textArea.style.opacity = 0;
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                return document.execCommand('copy');
-            } catch (err) {
-                console.error('Fallback: Oops, unable to copy', err);
-                return false;
-            } finally {
-                document.body.removeChild(textArea);
-            }
+        
+        function updateDynamicEmojis() {
+            const goodEmoji = goodEmojiInput.value.trim() || '🌸', badEmoji = badEmojiInput.value.trim() || '💩';
+            document.querySelector('.emoji-display[data-input-id="good-emoji-input"]').textContent = goodEmoji;
+            document.querySelector('.emoji-display[data-input-id="bad-emoji-input"]').textContent = badEmoji;
+            modalGoodBtn.innerHTML = `${goodEmoji} Good`;
+            modalBadBtn.innerHTML = `${badEmoji} Bad`;
+            const titleGoodEmoji = document.getElementById('title-good-emoji-display');
+            if (titleGoodEmoji) titleGoodEmoji.textContent = goodEmoji;
+            const titleBadEmoji = document.getElementById('title-bad-emoji-display');
+            if (titleBadEmoji) titleBadEmoji.textContent = badEmoji;
         }
 
         function handleShareClick() {
-            const url = new URL(window.location.href.split('?')[0]);
-            const title = calendarTitleInput.value.trim();
-
-            if (title) url.searchParams.set('title', title);
-            if (startDateInput.value) url.searchParams.set('start', startDateInput.value);
-            if (endDateInput.value) url.searchParams.set('end', endDateInput.value);
-            
-            if (goodDays.size > 0) url.searchParams.set('good', [...goodDays].sort().join(','));
-            if (badDays.size > 0) url.searchParams.set('bad', [...badDays].sort().join(','));
-            if (mixedDays.size > 0) url.searchParams.set('mixed', [...mixedDays].sort().join(','));
-
-            const finalUrl = url.toString() + '#calendar-view';
-
-            if (copyToClipboard(finalUrl)) {
-                const originalText = shareBtn.innerHTML;
-                shareBtn.innerHTML = '✅ Copied!';
-                shareBtn.disabled = true;
-                setTimeout(() => {
-                    shareBtn.innerHTML = originalText;
-                    shareBtn.disabled = false;
-                }, 2000);
+            const dataToCompress = {
+                title: calendarTitleInput.value.trim(), start: startDateInput.value, end: endDateInput.value,
+                goodEmoji: goodEmojiInput.value, badEmoji: badEmojiInput.value,
+                good: [...goodDays].sort().join(','), bad: [...badDays].sort().join(','), mixed: [...mixedDays].sort().join(',')
+            };
+            const compressedData = LZString.compressToEncodedURIComponent(JSON.stringify(dataToCompress));
+            const finalUrl = `${window.location.href.split('?')[0]}?data=${compressedData}#calendar-view`;
+            const originalText = shareBtn.innerHTML;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(finalUrl).then(() => { shareBtn.innerHTML = '✅ Copied!'; }).catch(() => { shareBtn.innerHTML = '❌ Copy Failed'; });
             }
+            shareBtn.disabled = true;
+            setTimeout(() => { shareBtn.innerHTML = originalText; shareBtn.disabled = false; }, 2000);
         }
 
-        // --- Initialization ---
         function setDefaultDates() {
-            const today = new Date();
-            const firstDayCurrentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-            const lastDayCurrentMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-
-            startDateInput.value = firstDayCurrentMonth.toISOString().split('T')[0];
-            endDateInput.value = lastDayCurrentMonth.toISOString().split('T')[0];
+            const defaultDate = new Date('2025-08-08T12:00:00');
+            const firstDayOfMonth = new Date(defaultDate.getFullYear(), defaultDate.getMonth(), 1);
+            const lastDayOfMonth = new Date(defaultDate.getFullYear(), defaultDate.getMonth() + 1, 0);
+            startDateInput.value = firstDayOfMonth.toISOString().split('T')[0];
+            endDateInput.value = lastDayOfMonth.toISOString().split('T')[0];
         }
 
         function loadFromURLParams() {
             const params = new URLSearchParams(window.location.search);
-            let hasParams = false;
-
-            if (params.has('title')) {
-                calendarTitleInput.value = params.get('title');
-                hasParams = true;
-            }
-            if (params.has('start')) {
-                startDateInput.value = params.get('start');
-                hasParams = true;
-            }
-            if (params.has('end')) {
-                endDateInput.value = params.get('end');
-                hasParams = true;
-            }
-            if (params.has('good')) {
-                goodDaysTextarea.value = params.get('good');
-                hasParams = true;
-            }
-            if (params.has('bad')) {
-                badDaysTextarea.value = params.get('bad');
-                hasParams = true;
-            }
-            if (params.has('mixed')) {
-                mixedDaysTextarea.value = params.get('mixed');
-                hasParams = true;
-            }
-
-            if (hasParams) {
-                renderCalendars();
+            if (!params.has('data')) return;
+            try {
+                const jsonString = LZString.decompressFromEncodedURIComponent(params.get('data'));
+                if (!jsonString) throw new Error("Decompression failed");
+                const data = JSON.parse(jsonString);
+                calendarTitleInput.value = data.title || ''; startDateInput.value = data.start || ''; endDateInput.value = data.end || '';
+                goodEmojiInput.value = data.goodEmoji || '🌸'; badEmojiInput.value = data.badEmoji || '💩';
+                goodDaysTextarea.value = data.good || ''; badDaysTextarea.value = data.bad || ''; mixedDaysTextarea.value = data.mixed || '';
+                updateDynamicEmojis(); renderCalendars();
+            } catch (error) {
+                console.error("Failed to load data from URL:", error);
+                alert("Could not load the shared calendar data. It may be corrupted.");
             }
         }
         
-        function init() {
-            setDefaultDates();
-            loadFromURLParams();
+        function initEmojiTogglers() {
+            document.querySelectorAll('.emoji-display').forEach(span => {
+                span.addEventListener('click', () => {
+                    const input = document.getElementById(span.dataset.inputId);
+                    // Use a prompt box instead of a hidden input field
+                    const newEmoji = prompt(`Enter a new emoji for ${input.id.replace('-emoji-input', '')}:`, input.value);
+                    if (newEmoji !== null) {
+                        input.value = newEmoji.trim().substring(0, 2); // Limit to 2 characters for some emoji combinations
+                        updateDynamicEmojis();
+                        if (calendarContainer.innerHTML.trim() !== '') renderCalendars();
+                    }
+                });
+            });
+        }
 
-            // --- Event Listeners ---
+        function selectDayRange(startDate, endDate) {
+            clearSelectionStyles();
+            selectedDays.clear();
+            
+            const start = new Date(startDate + 'T00:00:00');
+            const end = new Date(endDate + 'T00:00:00');
+            
+            let loopStart = start < end ? start : end;
+            let loopEnd = start < end ? end : start;
+            
+            for (let d = new Date(loopStart); d <= loopEnd; d.setDate(d.getDate() + 1)) {
+                const dateString = d.toISOString().split('T')[0];
+                selectedDays.add(dateString);
+                const cell = document.querySelector(`.calendar-day[data-date="${dateString}"]`);
+                if (cell) cell.classList.add('day-selected');
+            }
+        }
+
+        function init() {
+            setDefaultDates(); loadFromURLParams(); initEmojiTogglers();
             generateBtn.addEventListener('click', renderCalendars);
             shareBtn.addEventListener('click', handleShareClick);
             
-            calendarContainer.addEventListener('click', (e) => {
+            calendarContainer.addEventListener('mousedown', (e) => {
                 const dayCell = e.target.closest('.calendar-day');
-                if (dayCell && dayCell.dataset.date) {
-                    openDayModal(dayCell.dataset.date);
+                if (!dayCell) return;
+                e.preventDefault(); // Prevents default browser drag behavior
+                isDragging = true;
+                startDragDate = dayCell.dataset.date;
+                endDragDate = dayCell.dataset.date;
+                selectDayRange(startDragDate, endDragDate);
+            });
+
+            calendarContainer.addEventListener('mouseover', (e) => {
+                if (!isDragging) return;
+                const dayCell = e.target.closest('.calendar-day');
+                if (!dayCell) return;
+                endDragDate = dayCell.dataset.date;
+                selectDayRange(startDragDate, endDragDate);
+            });
+
+            calendarContainer.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    openDayModal();
+                }
+            });
+
+            // Handle mouseup anywhere on the window in case the user drags off the calendar
+            window.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    openDayModal();
                 }
             });
 
             dayModal.addEventListener('click', (e) => {
-                if (e.target.matches('.modal-btn')) {
-                    handleDayTypeChange(e.target.dataset.type);
-                }
-                if (e.target === modalCloseBtn || e.target === dayModal) {
-                    closeDayModal();
-                }
+                if (e.target.matches('.modal-btn')) handleDayTypeChange(e.target.dataset.type);
+                if (e.target === modalCloseBtn || e.target === dayModal) closeDayModal();
             });
         }
-
         window.onload = init;
-
     </script>
 </body>
 </html>
