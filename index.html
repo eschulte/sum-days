@@ -58,7 +58,7 @@
 <body class="bg-slate-100 text-slate-800 p-4 sm:p-8">
 
     <div class="max-w-7xl mx-auto">
-        <header class="text-center mb-8">
+        <header id="title-header" class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold text-slate-900">Good/Bad Days</h1>
             <p class="text-slate-600 mt-2">Create your calendar, mark your days, then click Share to get a link for others!</p>
         </header>
@@ -213,7 +213,8 @@
             // Update the page title to match the calendar title.
             document.title = title ? title : 'Good/Bad Days';
             
-            // CHANGE: Collapse the form and show the toggle button
+            // Collapse the form and title and show the toggle button
+            document.getElementById('title-header').classList.add('hidden')
             formContainer.classList.add('hidden');
             toggleFormContainer.classList.remove('hidden');
             toggleFormBtn.innerHTML = '⚙️ Show Calendar Details';
@@ -432,6 +433,7 @@
 
             // CHANGE: Event listener for the new form toggle button
             toggleFormBtn.addEventListener('click', () => {
+                document.getElementById('title-header').classList.toggle('hidden');
                 const isHidden = formContainer.classList.toggle('hidden');
                 toggleFormBtn.innerHTML = isHidden ? '⚙️ Show Calendar Details' : '⚙️ Hide Calendar Details';
             });
