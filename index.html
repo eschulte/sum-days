@@ -174,6 +174,39 @@
         let startDragDate = null;
         let endDragDate = null;
 
+        // NEW: Functions to generate and update the shareable URL in the address bar.
+        let debounceTimer;
+        function debounce(func, timeout = 300){
+          return (...args) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => { func.apply(this, args); }, timeout);
+          };
+        }
+
+        function generateShareURL() {
+            const dataToCompress = {
+                title: calendarTitleInput.value.trim(),
+                start: startDateInput.value,
+                end: endDateInput.value,
+                goodEmoji: goodEmojiInput.value,
+                badEmoji: badEmojiInput.value,
+                good: [...goodDays].sort().join(','),
+                bad: [...badDays].sort().join(','),
+                mixed: [...mixedDays].sort().join(',')
+            };
+            const compressedData = LZString.compressToEncodedURIComponent(JSON.stringify(dataToCompress));
+            // Construct a clean URL without existing parameters or hash.
+            return `${window.location.protocol}//${window.location.host}${window.location.pathname}?data=${compressedData}#calendar-view`;
+        }
+
+        function updateShareableURL() {
+            const newUrl = generateShareURL();
+            // Use replaceState to update the URL without adding to browser history.
+            window.history.replaceState({ path: newUrl }, '', newUrl);
+        }
+        
+        const debouncedUpdateURL = debounce(() => updateShareableURL());
+
         function parseDateListWithRanges(text) {
             const dateSet = new Set();
             if (!text) return dateSet;
@@ -243,6 +276,8 @@
                 currentDate.setMonth(currentDate.getMonth() + 1);
             }
             updateAllTextareas();
+            // NEW: Update the URL whenever the calendar is generated.
+            updateShareableURL();
         }
 
         function generateMonthCalendar(year, month, startDate, endDate) {
@@ -337,6 +372,8 @@
                 if (cellToUpdate) updateDayCell(cellToUpdate, date);
             }
             updateAllTextareas();
+            // NEW: Update the URL after the day types have been changed.
+            updateShareableURL();
             closeDayModal();
         }
         
@@ -353,13 +390,10 @@
         }
 
         function handleShareClick() {
-            const dataToCompress = {
-                title: calendarTitleInput.value.trim(), start: startDateInput.value, end: endDateInput.value,
-                goodEmoji: goodEmojiInput.value, badEmoji: badEmojiInput.value,
-                good: [...goodDays].sort().join(','), bad: [...badDays].sort().join(','), mixed: [...mixedDays].sort().join(',')
-            };
-            const compressedData = LZString.compressToEncodedURIComponent(JSON.stringify(dataToCompress));
-            const finalUrl = `${window.location.href.split('?')[0]}?data=${compressedData}#calendar-view`;
+            // MODIFIED: This function now uses the helper to generate the URL and ensures
+            // the address bar is up-to-date before copying.
+            const finalUrl = generateShareURL();
+            window.history.replaceState({ path: finalUrl }, '', finalUrl); // Ensure URL is latest
             const originalText = shareBtn.innerHTML;
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(finalUrl).then(() => { shareBtn.innerHTML = '✅ Copied!'; }).catch(() => { shareBtn.innerHTML = '❌ Copy Failed'; });
@@ -402,7 +436,12 @@
                     if (newEmoji !== null) {
                         input.value = newEmoji.trim().substring(0, 2); // Limit to 2 characters for some emoji combinations
                         updateDynamicEmojis();
-                        if (calendarContainer.innerHTML.trim() !== '') renderCalendars();
+                            // MODIFIED: If calendar exists, re-render (which updates URL). Otherwise, just update URL.
+                        if (calendarContainer.innerHTML.trim() !== '') {
+                                renderCalendars();
+                            } else {
+                                updateShareableURL();
+                            }
                     }
                 });
             });
@@ -430,6 +469,25 @@
             setDefaultDates(); loadFromURLParams(); initEmojiTogglers();
             generateBtn.addEventListener('click', renderCalendars);
             shareBtn.addEventListener('click', handleShareClick);
+
+            // NEW: Add event listeners to all form inputs to update the URL on any change.
+            const inputsToTrack = [
+                calendarTitleInput, startDateInput, endDateInput,
+                goodDaysTextarea, badDaysTextarea, mixedDaysTextarea
+            ];
+            inputsToTrack.forEach(input => {
+                input.addEventListener('input', () => {
+                    // When typing in textareas, we must re-parse the dates to update the underlying
+                    // state (the Sets) before generating the share URL.
+                    if (['good-days', 'bad-days', 'mixed-days'].includes(input.id)) {
+                        goodDays = parseDateListWithRanges(goodDaysTextarea.value);
+                        badDays = parseDateListWithRanges(badDaysTextarea.value);
+                        mixedDays = parseDateListWithRanges(mixedDaysTextarea.value);
+                    }
+                    // Use a debounced function to avoid updating the URL on every single keystroke.
+                    debouncedUpdateURL();
+                });
+            });
 
             // CHANGE: Event listener for the new form toggle button
             toggleFormBtn.addEventListener('click', () => {
