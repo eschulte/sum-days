@@ -297,10 +297,10 @@
                 fancyTitle.textContent = title; 
                 calendarView.innerHTML = `
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        ${fancyTitle.outerHTML}
                         <div class="text-3xl md:text-4xl flex items-center gap-2" role="img">
                             <span id="title-good-emoji-display">${goodEmoji}</span> <span id="good-count"></span>
                         </div>
-                        ${fancyTitle.outerHTML}
                         <div class="text-3xl md:text-4xl flex items-center gap-2" role="img">
                             <span id="title-bad-emoji-display">${badEmoji}</span> <span id="bad-count"></span>
                         </div>
@@ -371,9 +371,9 @@
         
         function updateDayCell(dayCell, dateString) {
             const goodEmoji = goodEmojiInput.value.trim() || '🌸', badEmoji = badEmojiInput.value.trim() || '💩', mixedEmoji = mixedEmojiInput.value.trim() || '🌗';
-            const goodSecondaryEmoji = goodSecondaryEmojiInput.value.trim() || '😊';
-            const badSecondaryEmoji = badSecondaryEmojiInput.value.trim() || '😞';
-            const mixedSecondaryEmoji = mixedSecondaryEmojiInput.value.trim() || '🤷‍♀️';
+            const goodSecondaryEmoji = goodSecondaryEmojiInput.value.trim() || '&nbsp;';
+            const badSecondaryEmoji = badSecondaryEmojiInput.value.trim() || '&nbsp;';
+          const mixedSecondaryEmoji = mixedSecondaryEmojiInput.value.trim() || '&nbsp;';
             const day = new Date(dateString + 'T00:00:00').getDate();
             let cellClasses = 'h-20 sm:h-24 p-1.5 rounded-lg flex flex-col justify-between text-sm transition-all duration-200';
             let content = `<span class="day-number font-medium self-end">${day}</span><div class="text-2xl text-center"></div>`;
@@ -431,9 +431,9 @@
         
         function updateDynamicEmojis() {
             const goodEmoji = goodEmojiInput.value.trim() || '🌸', badEmoji = badEmojiInput.value.trim() || '💩', mixedEmoji = mixedEmojiInput.value.trim() || '🌗';
-            const goodSecondaryEmoji = goodSecondaryEmojiInput.value.trim() || '😊';
-            const badSecondaryEmoji = badSecondaryEmojiInput.value.trim() || '😞';
-            const mixedSecondaryEmoji = mixedSecondaryEmojiInput.value.trim() || '🤷‍♀️';
+            const goodSecondaryEmoji = goodSecondaryEmojiInput.value.trim() || '&nbsp;';
+            const badSecondaryEmoji = badSecondaryEmojiInput.value.trim() || '&nbsp;';
+            const mixedSecondaryEmoji = mixedSecondaryEmojiInput.value.trim() || '&nbsp;';
 
             document.querySelector('.emoji-display[data-input-id="good-emoji-input"]').textContent = goodEmoji;
             document.querySelector('.emoji-display[data-input-id="good-secondary-emoji-input"]').textContent = goodSecondaryEmoji;
@@ -482,9 +482,9 @@
                 const data = JSON.parse(jsonString);
                 calendarTitleInput.value = data.title || ''; startDateInput.value = data.start || ''; endDateInput.value = data.end || '';
                 goodEmojiInput.value = data.goodEmoji || '🌸'; badEmojiInput.value = data.badEmoji || '💩'; mixedEmojiInput.value = data.mixedEmoji || '🌗';
-                goodSecondaryEmojiInput.value = data.goodSecondaryEmoji || '😊';
-                badSecondaryEmojiInput.value = data.badSecondaryEmoji || '😞';
-                mixedSecondaryEmojiInput.value = data.mixedSecondaryEmoji || '🤷‍♀️';
+                goodSecondaryEmojiInput.value = data.goodSecondaryEmoji || '&nbsp;';
+                badSecondaryEmojiInput.value = data.badSecondaryEmoji || '&nbsp;';
+                mixedSecondaryEmojiInput.value = data.mixedSecondaryEmoji || '&nbsp;';
                 goodDaysTextarea.value = data.good || ''; badDaysTextarea.value = data.bad || ''; mixedDaysTextarea.value = data.mixed || '';
                 updateDynamicEmojis(); renderCalendars();
             } catch (error) {
