@@ -73,7 +73,7 @@
             <div id="form-container" class="bg-white p-6 rounded-2xl shadow-lg mb-8 overflow-hidden">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <div>
-                        <label for="calendar-title" class="block text-sm font-medium text-slate-700 mb-1">Optional Title</label>
+                        <label for="calendar-title" class="block text-sm font-medium text-slate-700 mb-1">Required Title</label>
                         <input type="text" id="calendar-title" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400" placeholder="e.g., My Summer Vacation">
                     </div>
                     <div>
@@ -94,6 +94,10 @@
                                 <span class="emoji-display absolute inset-0 flex items-center justify-center text-base cursor-pointer" title="Click to change emoji" data-input-id="good-emoji-input">🌸</span>
                                 <input type="text" id="good-emoji-input" value="🌸" maxlength="2" class="absolute inset-0 w-full h-full p-0 text-center border rounded hidden">
                             </div>
+                            <div class="relative w-8 h-6">
+                                <span class="emoji-display absolute inset-0 flex items-center justify-center text-base cursor-pointer" title="Click to change emoji" data-input-id="good-secondary-emoji-input">😊</span>
+                                <input type="text" id="good-secondary-emoji-input" value="😊" maxlength="2" class="absolute inset-0 w-full h-full p-0 text-center border rounded hidden">
+                            </div>
                         </label>
                         <textarea id="good-days" rows="4" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-400" placeholder="e.g., 2024-08-08 to 2024-08-10"></textarea>
                     </div>
@@ -104,11 +108,25 @@
                                 <span class="emoji-display absolute inset-0 flex items-center justify-center text-base cursor-pointer" title="Click to change emoji" data-input-id="bad-emoji-input">💩</span>
                                 <input type="text" id="bad-emoji-input" value="💩" maxlength="2" class="absolute inset-0 w-full h-full p-0 text-center border rounded hidden">
                             </div>
+                            <div class="relative w-8 h-6">
+                                <span class="emoji-display absolute inset-0 flex items-center justify-center text-base cursor-pointer" title="Click to change emoji" data-input-id="bad-secondary-emoji-input">😞</span>
+                                <input type="text" id="bad-secondary-emoji-input" value="😞" maxlength="2" class="absolute inset-0 w-full h-full p-0 text-center border rounded hidden">
+                            </div>
                         </label>
                         <textarea id="bad-days" rows="4" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-400" placeholder="e.g., 2024-08-11"></textarea>
                     </div>
                     <div>
-                        <label for="mixed-days" class="block text-sm font-medium text-yellow-700 mb-1">Mixed Days 🌗</label>
+                        <label for="mixed-days" class="block text-sm font-medium text-yellow-700 mb-1 flex items-center gap-2">
+                            <span>Mixed Days</span>
+                            <div class="relative w-8 h-6">
+                                <span class="emoji-display absolute inset-0 flex items-center justify-center text-base cursor-pointer" title="Click to change emoji" data-input-id="mixed-emoji-input">🌗</span>
+                                <input type="text" id="mixed-emoji-input" value="🌗" maxlength="2" class="absolute inset-0 w-full h-full p-0 text-center border rounded hidden">
+                            </div>
+                            <div class="relative w-8 h-6">
+                                <span class="emoji-display absolute inset-0 flex items-center justify-center text-base cursor-pointer" title="Click to change emoji" data-input-id="mixed-secondary-emoji-input">🤷‍♀️</span>
+                                <input type="text" id="mixed-secondary-emoji-input" value="🤷‍♀️" maxlength="2" class="absolute inset-0 w-full h-full p-0 text-center border rounded hidden">
+                            </div>
+                        </label>
                         <textarea id="mixed-days" rows="4" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-yellow-400" placeholder="e.g., 2024-08-12"></textarea>
                     </div>
                 </div>
@@ -135,7 +153,7 @@
             <div class="grid grid-cols-2 gap-3">
                 <button data-type="good" id="modal-good-btn" class="modal-btn bg-pink-200 text-pink-800 font-semibold py-3 rounded-lg hover:bg-pink-300">🌸 Good</button>
                 <button data-type="bad" id="modal-bad-btn" class="modal-btn bg-yellow-900/80 text-yellow-100 font-semibold py-3 rounded-lg hover:bg-yellow-900">💩 Bad</button>
-                <button data-type="mixed" class="modal-btn bg-gray-400 text-white font-semibold py-3 rounded-lg hover:bg-gray-500">🌗 Mixed</button>
+                <button data-type="mixed" id="modal-mixed-btn" class="modal-btn mixed-day-bg text-slate-800 font-semibold py-3 rounded-lg hover:bg-yellow-900">🌗 Mixed</button>
                 <button data-type="neutral" class="modal-btn bg-slate-200 text-slate-800 font-semibold py-3 rounded-lg hover:bg-slate-300">⚪️ Neutral</button>
             </div>
             <button id="modal-close-btn" class="mt-4 text-sm text-slate-500 hover:text-slate-700">Cancel</button>
@@ -150,6 +168,10 @@
               endDateInput = document.getElementById('end-date'),
               goodEmojiInput = document.getElementById('good-emoji-input'),
               badEmojiInput = document.getElementById('bad-emoji-input'),
+              mixedEmojiInput = document.getElementById('mixed-emoji-input'),
+              goodSecondaryEmojiInput = document.getElementById('good-secondary-emoji-input'),
+              badSecondaryEmojiInput = document.getElementById('bad-secondary-emoji-input'),
+              mixedSecondaryEmojiInput = document.getElementById('mixed-secondary-emoji-input'),
               goodDaysTextarea = document.getElementById('good-days'),
               badDaysTextarea = document.getElementById('bad-days'),
               mixedDaysTextarea = document.getElementById('mixed-days'),
@@ -162,7 +184,7 @@
               modalCloseBtn = document.getElementById('modal-close-btn'),
               modalGoodBtn = document.getElementById('modal-good-btn'),
               modalBadBtn = document.getElementById('modal-bad-btn'),
-              // CHANGE: References for the new form toggling elements
+              modalMixedBtn = document.getElementById('modal-mixed-btn'),
               formContainer = document.getElementById('form-container'),
               toggleFormContainer = document.getElementById('toggle-form-container'),
               toggleFormBtn = document.getElementById('toggle-form-btn');
@@ -190,6 +212,10 @@
                 end: endDateInput.value,
                 goodEmoji: goodEmojiInput.value,
                 badEmoji: badEmojiInput.value,
+                mixedEmoji: mixedEmojiInput.value,
+                goodSecondaryEmoji: goodSecondaryEmojiInput.value,
+                badSecondaryEmoji: badSecondaryEmojiInput.value,
+                mixedSecondaryEmoji: mixedSecondaryEmojiInput.value,
                 good: [...goodDays].sort().join(','),
                 bad: [...badDays].sort().join(','),
                 mixed: [...mixedDays].sort().join(',')
@@ -238,13 +264,24 @@
             if (goodCountSpan) goodCountSpan.textContent = goodDays.size;
             const badCountSpan = document.getElementById('bad-count');
             if (badCountSpan) badCountSpan.textContent = badDays.size;
+            const mixedCountSpan = document.getElementById('mixed-count');
+            if (mixedCountSpan) mixedCountSpan.textContent = mixedDays.size;
         }
 
         function renderCalendars() {
-            const title = calendarTitleInput.value.trim();
+            // NEW: Ensure the title is set.
+            let title = calendarTitleInput.value.trim();
+            if (!title) {
+                title = prompt("Please enter a title for your calendar:");
+                if (title) {
+                    calendarTitleInput.value = title;
+                } else {
+                    return; // Abort if user cancels the prompt
+                }
+            }
             
             // Update the page title to match the calendar title.
-            document.title = title ? title : 'Good/Bad Days';
+            document.title = title;
             
             // Collapse the form and title and show the toggle button
             document.getElementById('title-header').classList.add('hidden')
@@ -252,13 +289,26 @@
             toggleFormContainer.classList.remove('hidden');
             toggleFormBtn.innerHTML = '⚙️ Show Calendar Details';
 
-            const goodEmoji = goodEmojiInput.value.trim() || '🌸', badEmoji = badEmojiInput.value.trim() || '💩';
+            const goodEmoji = goodEmojiInput.value.trim() || '🌸', badEmoji = badEmojiInput.value.trim() || '💩', mixedEmoji = mixedEmojiInput.value.trim() || '🌗';
             calendarView.innerHTML = '';
             if (title) {
                 const fancyTitle = document.createElement('h2');
                 fancyTitle.className = 'text-3xl md:text-5xl font-bold text-center text-slate-800 break-words';
                 fancyTitle.textContent = title; 
-                calendarView.innerHTML = `<span class="text-3xl md:text-4xl" role="img"><span id="title-good-emoji-display">${goodEmoji}</span> <span id="good-count"></span></span> ${fancyTitle.outerHTML} <span class="text-3xl md:text-4xl" role="img"><span id="title-bad-emoji-display">${badEmoji}</span> <span id="bad-count"></span></span>`;
+                calendarView.innerHTML = `
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <div class="text-3xl md:text-4xl flex items-center gap-2" role="img">
+                            <span id="title-good-emoji-display">${goodEmoji}</span> <span id="good-count"></span>
+                        </div>
+                        ${fancyTitle.outerHTML}
+                        <div class="text-3xl md:text-4xl flex items-center gap-2" role="img">
+                            <span id="title-bad-emoji-display">${badEmoji}</span> <span id="bad-count"></span>
+                        </div>
+                        <div class="text-3xl md:text-4xl flex items-center gap-2" role="img">
+                            <span id="title-mixed-emoji-display">${mixedEmoji}</span> <span id="mixed-count"></span>
+                        </div>
+                    </div>
+                `;
                 calendarView.classList.add('text-center');
             }
             const startDate = new Date(startDateInput.value + 'T00:00:00'), endDate = new Date(endDateInput.value + 'T00:00:00');
@@ -320,19 +370,22 @@
         }
         
         function updateDayCell(dayCell, dateString) {
-            const goodEmoji = goodEmojiInput.value.trim() || '🌸', badEmoji = badEmojiInput.value.trim() || '💩';
+            const goodEmoji = goodEmojiInput.value.trim() || '🌸', badEmoji = badEmojiInput.value.trim() || '💩', mixedEmoji = mixedEmojiInput.value.trim() || '🌗';
+            const goodSecondaryEmoji = goodSecondaryEmojiInput.value.trim() || '😊';
+            const badSecondaryEmoji = badSecondaryEmojiInput.value.trim() || '😞';
+            const mixedSecondaryEmoji = mixedSecondaryEmojiInput.value.trim() || '🤷‍♀️';
             const day = new Date(dateString + 'T00:00:00').getDate();
             let cellClasses = 'h-20 sm:h-24 p-1.5 rounded-lg flex flex-col justify-between text-sm transition-all duration-200';
             let content = `<span class="day-number font-medium self-end">${day}</span><div class="text-2xl text-center"></div>`;
             if (goodDays.has(dateString)) {
                 cellClasses += ' bg-pink-200 text-pink-800';
-                content = `<span class="day-number font-bold self-end">${day}</span><div class="text-2xl text-center leading-tight">${goodEmoji}<br>😊</div>`;
+                content = `<span class="day-number font-bold self-end">${day}</span><div class="text-2xl text-center leading-tight">${goodEmoji}<br>${goodSecondaryEmoji}</div>`;
             } else if (badDays.has(dateString)) {
                 cellClasses += ' bg-yellow-900/80 text-yellow-100';
-                content = `<span class="day-number font-bold self-end">${day}</span><div class="text-2xl text-center leading-tight">${badEmoji}<br>😞</div>`;
+                content = `<span class="day-number font-bold self-end">${day}</span><div class="text-2xl text-center leading-tight">${badEmoji}<br>${badSecondaryEmoji}</div>`;
             } else if (mixedDays.has(dateString)) {
                 cellClasses += ' mixed-day-bg text-slate-900';
-                content = `<span class="day-number font-bold self-end">${day}</span><div class="text-2xl text-center"></div>`;
+                content = `<span class="day-number font-bold self-end">${day}</span><div class="text-2xl text-center leading-tight">${mixedEmoji}<br>${mixedSecondaryEmoji}</div>`;
             } else {
                 cellClasses += ' bg-slate-100 hover:bg-slate-200';
             }
@@ -372,26 +425,36 @@
                 if (cellToUpdate) updateDayCell(cellToUpdate, date);
             }
             updateAllTextareas();
-            // NEW: Update the URL after the day types have been changed.
             updateShareableURL();
             closeDayModal();
         }
         
         function updateDynamicEmojis() {
-            const goodEmoji = goodEmojiInput.value.trim() || '🌸', badEmoji = badEmojiInput.value.trim() || '💩';
+            const goodEmoji = goodEmojiInput.value.trim() || '🌸', badEmoji = badEmojiInput.value.trim() || '💩', mixedEmoji = mixedEmojiInput.value.trim() || '🌗';
+            const goodSecondaryEmoji = goodSecondaryEmojiInput.value.trim() || '😊';
+            const badSecondaryEmoji = badSecondaryEmojiInput.value.trim() || '😞';
+            const mixedSecondaryEmoji = mixedSecondaryEmojiInput.value.trim() || '🤷‍♀️';
+
             document.querySelector('.emoji-display[data-input-id="good-emoji-input"]').textContent = goodEmoji;
+            document.querySelector('.emoji-display[data-input-id="good-secondary-emoji-input"]').textContent = goodSecondaryEmoji;
             document.querySelector('.emoji-display[data-input-id="bad-emoji-input"]').textContent = badEmoji;
+            document.querySelector('.emoji-display[data-input-id="bad-secondary-emoji-input"]').textContent = badSecondaryEmoji;
+            document.querySelector('.emoji-display[data-input-id="mixed-emoji-input"]').textContent = mixedEmoji;
+            document.querySelector('.emoji-display[data-input-id="mixed-secondary-emoji-input"]').textContent = mixedSecondaryEmoji;
+
             modalGoodBtn.innerHTML = `${goodEmoji} Good`;
             modalBadBtn.innerHTML = `${badEmoji} Bad`;
+            modalMixedBtn.innerHTML = `${mixedEmoji} Mixed`;
+
             const titleGoodEmoji = document.getElementById('title-good-emoji-display');
             if (titleGoodEmoji) titleGoodEmoji.textContent = goodEmoji;
             const titleBadEmoji = document.getElementById('title-bad-emoji-display');
             if (titleBadEmoji) titleBadEmoji.textContent = badEmoji;
+            const titleMixedEmoji = document.getElementById('title-mixed-emoji-display');
+            if (titleMixedEmoji) titleMixedEmoji.textContent = mixedEmoji;
         }
 
         function handleShareClick() {
-            // MODIFIED: This function now uses the helper to generate the URL and ensures
-            // the address bar is up-to-date before copying.
             const finalUrl = generateShareURL();
             window.history.replaceState({ path: finalUrl }, '', finalUrl); // Ensure URL is latest
             const originalText = shareBtn.innerHTML;
@@ -418,7 +481,10 @@
                 if (!jsonString) throw new Error("Decompression failed");
                 const data = JSON.parse(jsonString);
                 calendarTitleInput.value = data.title || ''; startDateInput.value = data.start || ''; endDateInput.value = data.end || '';
-                goodEmojiInput.value = data.goodEmoji || '🌸'; badEmojiInput.value = data.badEmoji || '💩';
+                goodEmojiInput.value = data.goodEmoji || '🌸'; badEmojiInput.value = data.badEmoji || '💩'; mixedEmojiInput.value = data.mixedEmoji || '🌗';
+                goodSecondaryEmojiInput.value = data.goodSecondaryEmoji || '😊';
+                badSecondaryEmojiInput.value = data.badSecondaryEmoji || '😞';
+                mixedSecondaryEmojiInput.value = data.mixedSecondaryEmoji || '🤷‍♀️';
                 goodDaysTextarea.value = data.good || ''; badDaysTextarea.value = data.bad || ''; mixedDaysTextarea.value = data.mixed || '';
                 updateDynamicEmojis(); renderCalendars();
             } catch (error) {
@@ -436,7 +502,6 @@
                     if (newEmoji !== null) {
                         input.value = newEmoji.trim().substring(0, 2); // Limit to 2 characters for some emoji combinations
                         updateDynamicEmojis();
-                            // MODIFIED: If calendar exists, re-render (which updates URL). Otherwise, just update URL.
                         if (calendarContainer.innerHTML.trim() !== '') {
                                 renderCalendars();
                             } else {
@@ -470,7 +535,6 @@
             generateBtn.addEventListener('click', renderCalendars);
             shareBtn.addEventListener('click', handleShareClick);
 
-            // NEW: Add event listeners to all form inputs to update the URL on any change.
             const inputsToTrack = [
                 calendarTitleInput, startDateInput, endDateInput,
                 goodDaysTextarea, badDaysTextarea, mixedDaysTextarea
@@ -489,7 +553,6 @@
                 });
             });
 
-            // CHANGE: Event listener for the new form toggle button
             toggleFormBtn.addEventListener('click', () => {
                 document.getElementById('title-header').classList.toggle('hidden');
                 const isHidden = formContainer.classList.toggle('hidden');
