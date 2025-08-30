@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Design by Eric Schulte, source at https://github.com/eschulte/sum-days. -->
     <title>Sum-Days</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌗</text></svg>">
@@ -63,8 +63,7 @@
         <header id="title-header" class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold text-slate-900">Sum-Days</h1>
             <p class="text-slate-600 mt-2">
-              Create your calendar, mark your days, then click Share to get a link for others!</br>
-              Click to edit the emojis to customize the look and normative valence of your calendar.
+              Create your calendar, mark your days, then click Share to get a link for others!
             </p>
         </header>
 
@@ -90,7 +89,6 @@
                         <input type="date" id="end-date" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-pink-400">
                     </div>
                 </div>
-                
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <label for="good-days" class="block text-sm font-medium text-green-700 mb-1 flex items-center gap-2">
@@ -135,6 +133,7 @@
                         <textarea id="mixed-days" rows="4" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-yellow-400" placeholder="e.g., 2024-08-12"></textarea>
                     </div>
                 </div>
+                <div class="grid grid-cols-1 gap-6"><span  style="margin:auto;float:center;color:gray;font-size:small;">(Click emojis to edit and customize their look and the normative valence of your calendar.)</span></div>
                 <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
                     <button id="generate-btn" class="w-full sm:w-auto bg-pink-500 text-white font-bold py-3 px-8 rounded-full hover:bg-pink-600 transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-pink-300">
                         Generate Calendar
