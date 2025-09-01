@@ -480,7 +480,7 @@
         }
 
         function setDefaultDates() {
-            const defaultDate = new Date('2025-08-08T12:00:00');
+            const defaultDate = new Date();
             const firstDayOfMonth = new Date(defaultDate.getFullYear(), defaultDate.getMonth(), 1);
             const lastDayOfMonth = new Date(defaultDate.getFullYear(), defaultDate.getMonth() + 1, 0);
             startDateInput.value = firstDayOfMonth.toISOString().split('T')[0];
